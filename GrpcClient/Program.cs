@@ -23,6 +23,7 @@ namespace GrpcClient
         static async Task Main(string[] args)
         {
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            var data = new ConfigurationBuilder().AddJsonFile(@"JsonData\RPCData.json").Build();
 
             var threadTime = Convert.ToInt32(config.GetSection("TimeSeconds").Value);
             var taskCount = Convert.ToInt32(config.GetSection("TaskCount").Value);
@@ -32,7 +33,12 @@ namespace GrpcClient
             Console.WriteLine($"MillisecondsTime : {threadTime}");
             Console.WriteLine($"TaskCount : {taskCount}");
 
+            //using (StreamReader r = new StreamReader(@"JsonData\RPCData.json"))
+            //{
+            //    string json = r.ReadToEnd();
 
+            //    var Items = JsonSerializer.Deserialize<object>(json);
+            //}
 
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             var channel = GrpcChannel.ForAddress($"http://127.0.0.1:{config.GetSection("Port").Value}");
@@ -50,21 +56,32 @@ namespace GrpcClient
                                 number = number + 1;
                             }
 
-                            Console.WriteLine($"Start RBAC client run count : {number} , time = {DateTime.Now}");
-
-                            switch (rPCServiceType)
+                            try
                             {
-                                case RPCServiceType.B2CImage:
-                                    Console.WriteLine($"RPCServiceType : {rPCServiceType.ToString()}");
-                                    B2CImageClient.B2CImage_ConveyB2CImageAsync(channel);
-                                    break;
-                                case RPCServiceType.Media:
-                                    Console.WriteLine($"RPCServiceType : {rPCServiceType.ToString()}");
-                                    MediaClient.Media_SaveFrontendIcon(channel);
-                                    break;
-                                default:
-                                    Console.WriteLine($"RPCServiceType not found : {rPCServiceType}");
-                                    break;
+                                Console.WriteLine($"Start RBAC client run count : {number} , time = {DateTime.Now}");
+
+                                switch (rPCServiceType)
+                                {
+                                    case RPCServiceType.B2CImage:
+                                        Console.WriteLine($"RPCServiceType : {rPCServiceType.ToString()}");
+                                        var b2cImagerequest = new ConveyB2CImageRequest();
+                                        data.GetSection("ConveyB2CImage").Bind(b2cImagerequest);
+                                        B2CImageClient.B2CImage_ConveyB2CImageAsync(channel, b2cImagerequest);
+                                        break;
+                                    case RPCServiceType.Media:
+                                        Console.WriteLine($"RPCServiceType : {rPCServiceType.ToString()}");
+                                        var mediarequest = new SaveFrontendIconRequest();
+                                        data.GetSection("SaveFrontendIcon").Bind(mediarequest);
+                                        MediaClient.Media_SaveFrontendIcon(channel, mediarequest);
+                                        break;
+                                    default:
+                                        Console.WriteLine($"RPCServiceType not found : {rPCServiceType}");
+                                        break;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Ryn RBAC client exception : {ex}");
                             }
                         });
                     }

@@ -1,0 +1,11 @@
+{
+  "ConveyB2CImage": {
+    "SalesMixId": 51972,
+    "Platform": 3,
+    "ImageType": 0,
+    "Overwrite": true
+  },
+  "SaveFrontendIcon": {
+    "FilePath": "/ETMALLNAS/FrontendIcon/00000000/test.png"
+  }
+}

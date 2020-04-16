@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace GrpcClient.RPCService
 {
-    public  class MediaClient
+    public class MediaClient
     {
-        public static async Task Media_SaveFrontendIcon(GrpcChannel channel)
+        public static async Task Media_SaveFrontendIcon(GrpcChannel channel, SaveFrontendIconRequest request)
         {
-            using (FileStream fs = File.OpenRead("test.png"))
+            using (FileStream fs = File.OpenRead(Path.GetFileName(request.FilePath)))
             {
                 using (MemoryStream ms = new MemoryStream())
                 {
@@ -24,7 +24,7 @@ namespace GrpcClient.RPCService
                     var reply = await client.SaveFrontendIconAsync(new SaveFrontendIconRequest
                     {
 
-                        FilePath = $"/ETMALLNAS/FrontendIcon/00000000/{DateTime.Today.ToString("d")}test.png",
+                        FilePath = request.FilePath,
                         FileData = Google.Protobuf.ByteString.CopyFrom(ms.ToArray()),
                         Req = new REQ { Guid = Guid.NewGuid().ToString("N") }
                     });

@@ -6,5 +6,7 @@ namespace GrpcClient.Model.Enum
 {
     public enum RPCServiceType
     {
+        B2CImage = 1,
+        Media = 2
     }
 }

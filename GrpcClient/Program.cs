@@ -1,5 +1,6 @@
 ﻿using Grpc.Core;
 using Grpc.Net.Client;
+using GrpcClient.Model.Enum;
 using GrpcClient.RPCService;
 using GrpcService;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,7 @@ namespace GrpcClient
     class Program
     {
         static int number = 0;
+        static object lockKey = new object();
 
         static async Task Main(string[] args)
         {
@@ -24,6 +26,7 @@ namespace GrpcClient
 
             var threadTime = Convert.ToInt32(config.GetSection("TimeSeconds").Value);
             var taskCount = Convert.ToInt32(config.GetSection("TaskCount").Value);
+            RPCServiceType rPCServiceType = (RPCServiceType)Convert.ToInt32(config.GetSection("Type").Value);
 
             Console.WriteLine($"Test RPCService Url : http://127.0.0.1:{Convert.ToInt32(config.GetSection("Port").Value)}");
             Console.WriteLine($"MillisecondsTime : {threadTime}");
@@ -42,13 +45,27 @@ namespace GrpcClient
                     {
                         Task.Run(async () =>
                         {
-
-                            number = number + 1;
+                            lock (lockKey)
+                            {
+                                number = number + 1;
+                            }
 
                             Console.WriteLine($"Start RBAC client run count : {number} , time = {DateTime.Now}");
 
-                            B2CImageClient.B2CImage_ConveyB2CImageAsync(channel);
-                            MediaClient.Media_SaveFrontendIcon(channel);
+                            switch (rPCServiceType)
+                            {
+                                case RPCServiceType.B2CImage:
+                                    Console.WriteLine($"RPCServiceType : {rPCServiceType.ToString()}");
+                                    B2CImageClient.B2CImage_ConveyB2CImageAsync(channel);
+                                    break;
+                                case RPCServiceType.Media:
+                                    Console.WriteLine($"RPCServiceType : {rPCServiceType.ToString()}");
+                                    MediaClient.Media_SaveFrontendIcon(channel);
+                                    break;
+                                default:
+                                    Console.WriteLine($"RPCServiceType not found : {rPCServiceType}");
+                                    break;
+                            }
                         });
                     }
                     Thread.Sleep(threadTime);

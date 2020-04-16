@@ -1,5 +1,6 @@
 ﻿using Grpc.Core;
 using Grpc.Net.Client;
+using GrpcClient.RPCService;
 using GrpcService;
 using Microsoft.Extensions.Configuration;
 using SCMRPC;
@@ -19,35 +20,44 @@ namespace GrpcClient
 
         static async Task Main(string[] args)
         {
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build(); 
+            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+
+            var threadTime = Convert.ToInt32(config.GetSection("TimeSeconds").Value);
+            var taskCount = Convert.ToInt32(config.GetSection("TaskCount").Value);
 
             Console.WriteLine($"Test RPCService Url : http://127.0.0.1:{Convert.ToInt32(config.GetSection("Port").Value)}");
-            Console.WriteLine($"MillisecondsTime : {Convert.ToInt32(config.GetSection("TimeSeconds").Value)}");
-            Console.WriteLine($"TaskCount : {Convert.ToInt32(config.GetSection("TaskCount").Value)}");
+            Console.WriteLine($"MillisecondsTime : {threadTime}");
+            Console.WriteLine($"TaskCount : {taskCount}");
+
 
 
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             var channel = GrpcChannel.ForAddress($"http://127.0.0.1:{config.GetSection("Port").Value}");
 
-            Task.Run(async () =>
+            Task.Run(() =>
             {
                 while (true)
                 {
-                    Task.Run(async () => {
+                    for (var i = 1; i <= taskCount; i++)
+                    {
+                        Task.Run(async () =>
+                        {
 
-                        number = number + 1;
+                            number = number + 1;
 
-                        Console.WriteLine($"Start RBAC client run count : {number} , time = {DateTime.Now}");
+                            Console.WriteLine($"Start RBAC client run count : {number} , time = {DateTime.Now}");
 
-                        //B2CImage_ConveyB2CImageAsync(channel);
-                        Media_SaveFrontendIcon(channel);                 
-                    });
+                            B2CImageClient.B2CImage_ConveyB2CImageAsync(channel);
+                            MediaClient.Media_SaveFrontendIcon(channel);
+                        });
+                    }
+                    Thread.Sleep(threadTime);
                 }
-                Thread.Sleep(Convert.ToInt32(config.GetSection("TimeSeconds").Value));
             });
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
+            Console.WriteLine("RPC channel dispose");
             channel.Dispose();
 
             #region 範例
@@ -67,44 +77,6 @@ namespace GrpcClient
             //Console.WriteLine("Press any key to exit...");
             //Console.ReadKey();
             #endregion
-        }
-
-        private static async Task B2CImage_ConveyB2CImageAsync(GrpcChannel channel)
-        {
-            var client = new B2CImage.B2CImageClient(channel);
-            var reply = await client.ConveyB2CImageAsync(new ConveyB2CImageRequest
-            {
-                SalesMixId = 51972,
-                //SalesMixId = 5005029,
-                Platform = 3,
-                ImageType = ConveyB2CImageRequest.Types.ImageType.All,
-                Overwrite = true
-            });
-
-            Console.WriteLine("Response: " + JsonSerializer.Serialize(reply.Res));
-        }
-
-        private static async Task Media_SaveFrontendIcon(GrpcChannel channel)
-        {
-            using (FileStream fs = File.OpenRead("20200415test.png"))
-            {
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    fs.CopyTo(ms);
-
-                    var client = new Media.MediaClient(channel);
-
-                    var reply = await client.SaveFrontendIconAsync(new SaveFrontendIconRequest
-                    {
-
-                        FilePath = "/ETMALLNAS/FrontendIcon/00000000/20200415test.png",
-                        FileData = Google.Protobuf.ByteString.CopyFrom(ms.ToArray()),
-                        Req = new REQ { Guid = Guid.NewGuid().ToString("N") }
-                    });
-
-                    Console.WriteLine("Response: " + JsonSerializer.Serialize(reply.Res));
-                }
-            }
         }
     }
 }

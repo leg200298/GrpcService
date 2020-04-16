@@ -32,13 +32,7 @@ namespace GrpcClient
             Console.WriteLine($"Test RPCService Url : http://127.0.0.1:{Convert.ToInt32(config.GetSection("Port").Value)}");
             Console.WriteLine($"MillisecondsTime : {threadTime}");
             Console.WriteLine($"TaskCount : {taskCount}");
-
-            //using (StreamReader r = new StreamReader(@"JsonData\RPCData.json"))
-            //{
-            //    string json = r.ReadToEnd();
-
-            //    var Items = JsonSerializer.Deserialize<object>(json);
-            //}
+            Console.WriteLine($"RPCServiceType : {rPCServiceType}");
 
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             var channel = GrpcChannel.ForAddress($"http://127.0.0.1:{config.GetSection("Port").Value}");
@@ -64,15 +58,27 @@ namespace GrpcClient
                                 {
                                     case RPCServiceType.B2CImage:
                                         Console.WriteLine($"RPCServiceType : {rPCServiceType.ToString()}");
+
                                         var b2cImagerequest = new ConveyB2CImageRequest();
                                         data.GetSection("ConveyB2CImage").Bind(b2cImagerequest);
+
                                         B2CImageClient.B2CImage_ConveyB2CImageAsync(channel, b2cImagerequest);
                                         break;
                                     case RPCServiceType.Media:
                                         Console.WriteLine($"RPCServiceType : {rPCServiceType.ToString()}");
+
                                         var mediarequest = new SaveFrontendIconRequest();
                                         data.GetSection("SaveFrontendIcon").Bind(mediarequest);
-                                        MediaClient.Media_SaveFrontendIcon(channel, mediarequest);
+
+                                        var fileName = Path.GetFileName(mediarequest.FilePath);
+                                        if (File.Exists(fileName))
+                                        {
+                                            MediaClient.Media_SaveFrontendIcon(channel, mediarequest);
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"File not found  : {fileName}");
+                                        }
                                         break;
                                     default:
                                         Console.WriteLine($"RPCServiceType not found : {rPCServiceType}");

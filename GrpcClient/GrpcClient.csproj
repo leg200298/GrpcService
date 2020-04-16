@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.11.4" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.27.0" />
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.23.2" />
+    <PackageReference Include="Grpc.Tools" Version="2.27.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.3" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\..\..\SCM\RPCServices\ServiceProtocal\protos\enum.proto" GrpcServices="Client">
+      <Link>Protos\enum.proto</Link>
+    </Protobuf>
+    <Protobuf Include="..\..\..\SCM\RPCServices\ServiceProtocal\protos\google\protobuf\any.proto" GrpcServices="Client">
+      <Link>Protos\any.proto</Link>
+    </Protobuf>
+    <Protobuf Include="..\..\..\SCM\RPCServices\ServiceProtocal\protos\SCM.proto" GrpcServices="Client">
+      <Link>Protos\SCM.proto</Link>
+    </Protobuf>
+    <Protobuf Include="..\..\..\SCM\RPCServices\ServiceProtocal\protos\SCM_model_mongo.proto" GrpcServices="Client">
+      <Link>Protos\SCM_model_mongo.proto</Link>
+    </Protobuf>
+    <Protobuf Include="..\GrpcService\Protos\greet.proto" GrpcServices="Client">
+      <Link>Protos\greet.proto</Link>
+    </Protobuf>
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="http://json.schemastore.org/BizTalkServerApplicationSchema" /></VisualStudio></ProjectExtensions>
+
+</Project>

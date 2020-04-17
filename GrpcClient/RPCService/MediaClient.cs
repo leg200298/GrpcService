@@ -27,7 +27,7 @@ namespace GrpcClient.RPCService
                         FilePath = request.FilePath,
                         FileData = Google.Protobuf.ByteString.CopyFrom(ms.ToArray()),
                         Req = new REQ { Guid = Guid.NewGuid().ToString("N") }
-                    },, deadline: DateTime.UtcNow.AddMinutes(2));
+                    }, deadline: DateTime.UtcNow.AddMinutes(2));
 
                     Console.WriteLine("Response: " + JsonSerializer.Serialize(reply.Res));
                 }

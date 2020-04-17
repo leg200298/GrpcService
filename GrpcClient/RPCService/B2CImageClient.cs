@@ -19,7 +19,7 @@ namespace GrpcClient.RPCService
                 Platform = request.Platform,
                 ImageType = request.ImageType,
                 Overwrite = request.Overwrite
-            });
+            }, deadline: DateTime.UtcNow.AddMinutes(2));
 
             Console.WriteLine("Response: " + JsonSerializer.Serialize(reply.Res));
         }

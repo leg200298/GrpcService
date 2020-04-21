@@ -13,24 +13,31 @@ namespace GrpcClient.RPCService
     {
         public static async Task Media_SaveFrontendIcon(GrpcChannel channel, SaveFrontendIconRequest request)
         {
-            using (FileStream fs = File.OpenRead(Path.GetFileName(request.FilePath)))
+            try
             {
-                using (MemoryStream ms = new MemoryStream())
+                using (FileStream fs = File.OpenRead(Path.GetFileName(request.FilePath)))
                 {
-                    fs.CopyTo(ms);
-
-                    var client = new Media.MediaClient(channel);
-
-                    var reply = await client.SaveFrontendIconAsync(new SaveFrontendIconRequest
+                    using (MemoryStream ms = new MemoryStream())
                     {
+                        fs.CopyTo(ms);
 
-                        FilePath = request.FilePath,
-                        FileData = Google.Protobuf.ByteString.CopyFrom(ms.ToArray()),
-                        Req = new REQ { Guid = Guid.NewGuid().ToString("N") }
-                    }, deadline: DateTime.Now.AddMinutes(2));
+                        var client = new Media.MediaClient(channel);
 
-                    Console.WriteLine("Response: " + JsonSerializer.Serialize(reply.Res));
+                        var reply = await client.SaveFrontendIconAsync(new SaveFrontendIconRequest
+                        {
+
+                            FilePath = request.FilePath,
+                            FileData = Google.Protobuf.ByteString.CopyFrom(ms.ToArray()),
+                            Req = new REQ { Guid = Guid.NewGuid().ToString("N") }
+                        }, deadline: DateTime.Now.AddMinutes(2));
+
+                        Console.WriteLine("Response: " + JsonSerializer.Serialize(reply.Res));
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
             }
         }
     }

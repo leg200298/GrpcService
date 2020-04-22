@@ -18,6 +18,7 @@ namespace TestFramework
         static bool isLock = false;
         private static async Task Main(string[] args)
         {
+
             #region 測試Concurrent
 
             //ConcurrentBagWithPallel();
@@ -27,8 +28,8 @@ namespace TestFramework
 
             #region 測試Task
 
-            Console.WriteLine("Application executing on thread {0}",
-                   Thread.CurrentThread.ManagedThreadId);
+            //Console.WriteLine("Application executing on thread {0}",
+            //       Thread.CurrentThread.ManagedThreadId);
             //var asyncTask =  Task.Run(() => {
             //    Console.WriteLine("Task {0} (asyncTask) executing on Thread {1}",
             //                      Task.CurrentId,
@@ -57,52 +58,52 @@ namespace TestFramework
 
             #endregion
 
+            #region 測試Mutex
             //var test = GetRemoteData().ConfigureAwait(false).GetAwaiter().GetResult();
             //Console.WriteLine(test);
 
-            byte[] imageData = null;
+            //byte[] imageData = null;
             //mutex.WaitOne();
             //mutex.WaitOne();
             //mutex.ReleaseMutex();
             //mutex.ReleaseMutex();
-            int count = 0;
-            while (true)
-            {
-                count = count + 1;
-                Thread.Sleep(1000);
+            //int count = 0;
+            //while (true)
+            //{
+            //    count = count + 1;
+            //    Thread.Sleep(1000);
 
-                Task.Run(() =>
-                {
-                    var handle = false;
-                    try
-                    {
-                        Console.WriteLine($"Input Count  {count} : {Thread.CurrentThread.ManagedThreadId}");
+            //    Task.Run(() =>
+            //    {
+            //        var handle = false;
+            //        try
+            //        {
+            //            Console.WriteLine($"Input Count  {count} : {Thread.CurrentThread.ManagedThreadId}");
 
-                        if (handle = mutex.WaitOne(1000))
-                        {
-                            Console.WriteLine($"Output Count  {count} : {Thread.CurrentThread.ManagedThreadId}");
-                            Thread.Sleep(5000);
-                            Console.WriteLine($"Thread Sleep Count  {count} : {Thread.CurrentThread.ManagedThreadId}");                          
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-                    finally
-                    {
-                        if(handle)
-                        {
-                            mutex.ReleaseMutex();
-                        }                       
-                    }
-                });
+            //            if (handle = mutex.WaitOne(1000))
+            //            {
+            //                Console.WriteLine($"Output Count  {count} : {Thread.CurrentThread.ManagedThreadId}");
+            //                Thread.Sleep(5000);
+            //                Console.WriteLine($"Thread Sleep Count  {count} : {Thread.CurrentThread.ManagedThreadId}");                          
+            //            }
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            Console.WriteLine(ex);
+            //        }
+            //        finally
+            //        {
+            //            if(handle)
+            //            {
+            //                mutex.ReleaseMutex();
+            //            }                       
+            //        }
+            //    });
+            //}
 
+            #endregion
 
-            }
-
-
-
+            #region 測試NAS連線
             //imageData = File.ReadAllBytes(@"C:\Users\yuchia.yang\Desktop\根據參考有使用到的B2C_Nas\無此檔案.txt");
             //testmodel testmodel = new testmodel { Test = JsonTest.Test };
             // Console.WriteLine(testmodel.Test.ToString());
@@ -110,31 +111,62 @@ namespace TestFramework
             // Console.WriteLine(test2);
 
             // var test3 = JsonConvert.DeserializeObject<testmodel>(test2);
-            Console.WriteLine("test");
+            //Console.WriteLine("test");
 
-            int number = 0;
-            while (number <= 10000)
+            //int number = 0;
+            //while (number <= 10000)
+            //{
+            //    Console.WriteLine($"Run count : {number} , time : {DateTime.Now}");
+            //    try
+            //    {
+            //        UNCResource.Connection(@"\\dev-nas01.etzone.net\NXimg", @"etzone\web-admin", "Aa123456");
+            //        UNCResource.Connection(@"\\dev-nas01.etzone.net\BBCONT", @"etzone\web-admin", "Aa123456");
+
+
+            //        UNCResource.Connection(@"\\dev-nas01.etzone.net\NXimg", @"etzone\web-admin", "Aa123456");
+            //        UNCResource.Connection(@"\\dev-nas01.etzone.net\NXimg", @"etzone\web-admin", "Aa123456");
+            //        UNCResource.Connection(@"\\dev-nas01.etzone.net\BBCONT", @"etzone\web-admin", "Aa123456");
+            //        UNCResource.Connection(@"\\dev-nas01.etzone.net\BBCONT", @"etzone\web-admin", "Aa123456");
+
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Console.WriteLine(ex);
+            //    }
+            //    number = number + 1;
+            //} 
+            #endregion
+
+            List<string> tobeReplace = new List<string> { @"\\ns3000.etmall.front\nximg",
+                "http://media.etmall.com.tw/NXimg",
+                "https://media.etmall.com.tw/NXimg",
+                "http://media.u-mall.com.tw/NXimg",
+                "https://media.u-mall.com.tw/NXimg" };
+            tobeReplace.Add(@"\\132080P-MEDIA01\Nximg");
+            tobeReplace.Add(@"\\132081P-MEDIA02\Nximg");
+
+            List<string> filepaths = new List<string>();
+            filepaths.Add(@"\\ns3000.etmall.front\nximg\002418\2418164\2418164-1_XXXL.jpg");
+            filepaths.Add(@"https://media.etmall.com.tw/NXimg/002418/2418164/2418164-1_XXXL.jpg");
+            filepaths.Add(@"\\132080P-MEDIA01\Nximg\002418\2418164\2418164-1_XXXL.jpg");
+
+            var imgUrls = new List<string>();
+            var imgUrlsLowCase = new List<string>();
+
+            filepaths.ForEach(f =>
             {
-                Console.WriteLine($"Run count : {number} , time : {DateTime.Now}");
-                try
+                var replacePath = tobeReplace.Where(c => f.Contains(c)).FirstOrDefault();
+                if (!string.IsNullOrEmpty(replacePath))
                 {
-                    UNCResource.Connection(@"\\dev-nas01.etzone.net\NXimg", @"etzone\web-admin", "Aa123456");
-                    UNCResource.Connection(@"\\dev-nas01.etzone.net\BBCONT", @"etzone\web-admin", "Aa123456");
-
-
-                    UNCResource.Connection(@"\\dev-nas01.etzone.net\NXimg", @"etzone\web-admin", "Aa123456");
-                    UNCResource.Connection(@"\\dev-nas01.etzone.net\NXimg", @"etzone\web-admin", "Aa123456");
-                    UNCResource.Connection(@"\\dev-nas01.etzone.net\BBCONT", @"etzone\web-admin", "Aa123456");
-                    UNCResource.Connection(@"\\dev-nas01.etzone.net\BBCONT", @"etzone\web-admin", "Aa123456");
-
+                    var path = f.Replace(replacePath, @"http://origin-media.etmall.com.tw/NXimg").Replace(@"\", @"/");
+                    imgUrls.Add(path);
+                    imgUrlsLowCase.Add(path.ToLower());
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
-                number = number + 1;
-            }
+            });
 
+            imgUrls.AddRange(imgUrlsLowCase);
+            imgUrls = imgUrls.Distinct().ToList();
+            Console.WriteLine(JsonConvert.SerializeObject(imgUrls));
             Console.ReadKey();
         }
 
@@ -196,5 +228,17 @@ namespace TestFramework
     {
         public JsonTest Test { get; set; }
         public string Test2 { get; set; } = "default Value";
+    }
+
+    public class test
+    {
+        public int t1 { get; set; } = 3;
+        public string t2 { get; set; } = "2 ";
+
+        public test2 c2 { get; set; } = new test2();
+    }
+    public class test2
+    {
+        public int t3 { get; set; } = 1;
     }
 }

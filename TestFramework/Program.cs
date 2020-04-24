@@ -3,9 +3,11 @@ using Red.Util;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -137,36 +139,63 @@ namespace TestFramework
             //} 
             #endregion
 
-            List<string> tobeReplace = new List<string> { @"\\ns3000.etmall.front\nximg",
-                "http://media.etmall.com.tw/NXimg",
-                "https://media.etmall.com.tw/NXimg",
-                "http://media.u-mall.com.tw/NXimg",
-                "https://media.u-mall.com.tw/NXimg" };
-            tobeReplace.Add(@"\\132080P-MEDIA01\Nximg");
-            tobeReplace.Add(@"\\132081P-MEDIA02\Nximg");
+            #region CDN
+            //List<string> tobeReplace = new List<string> { @"\\ns3000.etmall.front\nximg",
+            //    "http://media.etmall.com.tw/NXimg",
+            //    "https://media.etmall.com.tw/NXimg",
+            //    "http://media.u-mall.com.tw/NXimg",
+            //    "https://media.u-mall.com.tw/NXimg" };
+            //tobeReplace.Add(@"\\132080P-MEDIA01\Nximg");
+            //tobeReplace.Add(@"\\132081P-MEDIA02\Nximg");
 
-            List<string> filepaths = new List<string>();
-            filepaths.Add(@"\\ns3000.etmall.front\nximg\002418\2418164\2418164-1_XXXL.jpg");
-            filepaths.Add(@"https://media.etmall.com.tw/NXimg/002418/2418164/2418164-1_XXXL.jpg");
-            filepaths.Add(@"\\132080P-MEDIA01\Nximg\002418\2418164\2418164-1_XXXL.jpg");
+            //List<string> filepaths = new List<string>();
+            //filepaths.Add(@"\\ns3000.etmall.front\nximg\002418\2418164\2418164-1_XXXL.jpg");
+            //filepaths.Add(@"https://media.etmall.com.tw/NXimg/002418/2418164/2418164-1_XXXL.jpg");
+            //filepaths.Add(@"\\132080P-MEDIA01\Nximg\002418\2418164\2418164-1_XXXL.jpg");
 
-            var imgUrls = new List<string>();
-            var imgUrlsLowCase = new List<string>();
+            //var nasPaths = new string[] { @"\\ns3000.etmall.front\nximg", @"\\132080P-MEDIA01\Nximg", @"\\132081P-MEDIA02\Nximg" };
 
-            filepaths.ForEach(f =>
-            {
-                var replacePath = tobeReplace.Where(c => f.Contains(c)).FirstOrDefault();
-                if (!string.IsNullOrEmpty(replacePath))
-                {
-                    var path = f.Replace(replacePath, @"http://origin-media.etmall.com.tw/NXimg").Replace(@"\", @"/");
-                    imgUrls.Add(path);
-                    imgUrlsLowCase.Add(path.ToLower());
-                }
-            });
+            //var t = filepaths[0];
+            //var t2 = tobeReplace[0];
+            //var t3 = tobeReplace.Exists(k => t.StartsWith(k));
+            //var t4 = Array.Exists(nasPaths, p => t.StartsWith(p));
+            //Console.WriteLine(t.Contains(t2));
 
-            imgUrls.AddRange(imgUrlsLowCase);
-            imgUrls = imgUrls.Distinct().ToList();
-            Console.WriteLine(JsonConvert.SerializeObject(imgUrls));
+            //var imgUrls = new List<string>();
+            //var imgUrlsLowCase = new List<string>();
+
+            //filepaths.ForEach(f =>
+            //{
+            //    var replacePath = tobeReplace.Where(c => f.Contains(c)).FirstOrDefault();
+            //    if (!string.IsNullOrEmpty(replacePath))
+            //    {
+            //        var path = f.Replace(replacePath, @"http://origin-media.etmall.com.tw/NXimg").Replace(@"\", @"/");
+            //        imgUrls.Add(path);
+            //        imgUrlsLowCase.Add(path.ToLower());
+            //    }
+            //});
+
+            //imgUrls.AddRange(imgUrlsLowCase);
+            //imgUrls = imgUrls.Distinct().ToList();
+            //Console.WriteLine(JsonConvert.SerializeObject(imgUrls));
+            #endregion
+
+            var data = System.Reflection.MethodBase.GetCurrentMethod();
+
+            string showString = "";
+            //取得當前方法類別命名空間名稱
+            showString += "Namespace:" + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace + "\n";
+            //取得當前類別名稱
+            showString += "class Name:" + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "\n";
+            //取得當前所使用的方法
+            showString += "Method:" + System.Reflection.MethodBase.GetCurrentMethod().Name + "\n";
+
+            Console.WriteLine(showString);
+
+            MethodInfo methodInfo = new MethodInfo();
+            Console.WriteLine(MethodInfo.GetCurrentMethodInfo());
+            String strStackTrace = TestFramework.MethodInfo.GetParentInfo();
+            Console.WriteLine(strStackTrace);
             Console.ReadKey();
         }
 
@@ -223,6 +252,53 @@ namespace TestFramework
             return t;
         }
 
+
+    }
+
+    public class MethodInfo
+    {
+        /// <summary>
+        /// 取得 目前正在執行的 Function Info 資訊
+        /// </summary>
+        /// <returns></returns>
+        public static String GetCurrentMethodInfo()
+        {
+            string showString = "";
+            //取得當前方法類別命名空間名稱
+            showString += "Namespace:" + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace + "\n";
+            //取得當前類別名稱
+            showString += "class Name:" + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "\n";
+            //取得當前所使用的方法
+            showString += "Method:" + System.Reflection.MethodBase.GetCurrentMethod().Name + "\n";
+
+            return showString;
+        }
+
+        /// <summary>
+        /// 取得父類別的相關資訊(共用的Functiond可用)
+        /// </summary>
+        /// <returns></returns>
+        public static String GetParentInfo()
+        {
+            String showString = "";
+            StackTrace ss = new StackTrace(true);
+            //取得呼叫當前方法之上一層類別(GetFrame(1))的屬性
+            MethodBase mb = ss.GetFrame(1).GetMethod();
+
+            //取得呼叫當前方法之上一層類別(父方)的命名空間名稱
+            showString += mb.DeclaringType.Namespace + "\n";
+
+            //取得呼叫當前方法之上一層類別(父方)的function 所屬class Name
+            showString += mb.DeclaringType.Name + "\n";
+
+            //取得呼叫當前方法之上一層類別(父方)的Full class Name
+            showString += mb.DeclaringType.FullName + "\n";
+
+            //取得呼叫當前方法之上一層類別(父方)的Function Name
+            showString += mb.Name + "\n";
+
+            return showString;
+        }
     }
     public class testmodel
     {

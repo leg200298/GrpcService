@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using B2E.Core.Model.FORMAL;
+using B2E.Job;
+using Newtonsoft.Json;
 using Red.Util;
 using System;
 using System.Collections.Concurrent;
@@ -11,6 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static B2E.Job.OCRJob;
 
 namespace TestFramework
 {
@@ -180,22 +183,43 @@ namespace TestFramework
             //Console.WriteLine(JsonConvert.SerializeObject(imgUrls));
             #endregion
 
-            var data = System.Reflection.MethodBase.GetCurrentMethod();
+            #region 抓類別名稱
+            //var data = System.Reflection.MethodBase.GetCurrentMethod();
 
-            string showString = "";
-            //取得當前方法類別命名空間名稱
-            showString += "Namespace:" + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace + "\n";
-            //取得當前類別名稱
-            showString += "class Name:" + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "\n";
-            //取得當前所使用的方法
-            showString += "Method:" + System.Reflection.MethodBase.GetCurrentMethod().Name + "\n";
+            //string showString = "";
+            ////取得當前方法類別命名空間名稱
+            //showString += "Namespace:" + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace + "\n";
+            ////取得當前類別名稱
+            //showString += "class Name:" + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.FullName + "\n";
+            ////取得當前所使用的方法
+            //showString += "Method:" + System.Reflection.MethodBase.GetCurrentMethod().Name + "\n";
 
-            Console.WriteLine(showString);
+            //Console.WriteLine(showString);
 
-            MethodInfo methodInfo = new MethodInfo();
-            Console.WriteLine(MethodInfo.GetCurrentMethodInfo());
-            String strStackTrace = TestFramework.MethodInfo.GetParentInfo();
-            Console.WriteLine(strStackTrace);
+            //MethodInfo methodInfo = new MethodInfo();
+            //Console.WriteLine(MethodInfo.GetCurrentMethodInfo());
+            //String strStackTrace = TestFramework.MethodInfo.GetParentInfo();
+            //Console.WriteLine(strStackTrace); 
+            #endregion
+
+            #region 測試b2e.Job MoveVideoJob & VideoInfromtion 9527
+            //MoveVideoJob moveVideoJob = new MoveVideoJob();
+            //OCRJob oCRJob = new OCRJob();
+            //VideoInfromtion videoInfromtion = new VideoInfromtion();
+            //videoInfromtion.FileName = "helloTestVideo.mp4";
+            //videoInfromtion.VideoPath = @"helloTestVideo.mp4";
+            //videoInfromtion.CoverPath = @"helloTestVideo.mp4";
+
+            //IV_Data iV_Data = new IV_Data();
+            //iV_Data.create_by = 9527;
+            //iV_Data.id = 9527;
+            //iV_Data.cover = @"helloTestVideo.mp4";
+            //iV_Data.url = @"helloTestVideo.mp4";
+
+            //var test = moveVideoJob.TryMoveVideoData(iV_Data);
+            //var test2 = oCRJob.TryMoveVideoData(videoInfromtion, false); 
+            #endregion
+
             Console.ReadKey();
         }
 

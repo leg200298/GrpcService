@@ -1,24 +1,31 @@
 ﻿using B2E.Core.Model.FORMAL;
 using B2E.Job;
 using Newtonsoft.Json;
+using NLog;
 using Red.Util;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using static B2E.Job.OCRJob;
 
 namespace TestFramework
 {
     class Program
     {
+        static Logger log = LogManager.GetCurrentClassLogger();
         static Mutex mutex = new System.Threading.Mutex();
         static bool isLock = false;
         private static async Task Main(string[] args)
@@ -219,6 +226,59 @@ namespace TestFramework
             //var test = moveVideoJob.TryMoveVideoData(iV_Data);
             //var test2 = oCRJob.TryMoveVideoData(videoInfromtion, false); 
             #endregion
+
+            #region File測試
+            if (File.Exists(@"\\SCM\xcopyExcludex.txt"))
+            {
+                File.Delete(@"\\SCM\xcopyExcludex.txt");
+            }
+
+            //var picBytes = File.ReadAllBytes("yuchia_yang.png");
+            //string strSavePicForder = string.Format("/" + "B2BUserFiles2" + "/Product/TemporarilyPicture/{0}/", DateTime.Now.Date.ToString("yyyyMMdd")); //目的存檔路徑
+            //Console.WriteLine(HttpContext.Current.Server.MapPath(strSavePicForder));
+            //File.Copy("yuchia_yang.png", "yuchia_yang.png2", false);
+            //Check if the pic Width and Height not equal
+            //Image source ;
+            //using (MemoryStream memstr = new MemoryStream(picBytes))
+            //{
+            //    source = Image.FromStream(memstr);
+            //}
+
+            //Console.WriteLine($"{source.Width}  {source.Height}"); 
+            #endregion
+
+            //int int100 = 100;
+
+            //long int32100 = int100;
+
+            //log.Info(new Exception("Hello"), "Test");
+            //Console.WriteLine(Directory.Exists(string.Empty))
+            using (Bitmap test = new Bitmap("yuchia_yang.jpg"))
+            {
+
+                var requestw = test.Size.Width;
+                var requesth = test.Size.Height;
+
+                var _jpegCodec = ImageCodecInfo.GetImageEncoders().Where(codec => codec.MimeType == "image/jpeg").FirstOrDefault();
+                var _encoderParams = new EncoderParameters(1);
+                _encoderParams.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 100);
+
+                int largestDimension = Math.Max(2000,2000);
+                Size squareSize = new Size(largestDimension, largestDimension);
+
+                using (Bitmap squareImage = new Bitmap(squareSize.Width, squareSize.Height))
+                {
+                    using (Graphics graphics = Graphics.FromImage(squareImage))
+                    {
+                        graphics.FillRectangle(Brushes.White, 0, 0, squareSize.Width, squareSize.Height);
+                        graphics.CompositingQuality = CompositingQuality.HighQuality;
+                        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        graphics.SmoothingMode = SmoothingMode.HighQuality;
+                        graphics.DrawImage(test, 0, 0, squareSize.Width, squareSize.Height);
+                        squareImage.Save("test3", _jpegCodec, _encoderParams);
+                    }
+                }
+            }
 
             Console.ReadKey();
         }

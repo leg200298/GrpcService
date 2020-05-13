@@ -64,6 +64,7 @@ namespace GrpcClient
 
                                         B2CImageClient.B2CImage_ConveyB2CImageAsync(channel, b2cImagerequest);
                                         break;
+
                                     case RPCServiceType.Media:
                                         Console.WriteLine($"RPCServiceType : {rPCServiceType.ToString()}");
 
@@ -79,6 +80,12 @@ namespace GrpcClient
                                         {
                                             Console.WriteLine($"File not found  : {fileName}");
                                         }
+                                        break;
+
+                                    case RPCServiceType.B2EImage:
+                                        var compressB2EImageRequest = new CompressB2EImageRequest();
+                                        data.GetSection("CompressB2EImageRequest").Bind(compressB2EImageRequest);
+                                        B2EImageClient.B2EImage_CompressB2EImageAsync(channel, compressB2EImageRequest);
                                         break;
                                     default:
                                         Console.WriteLine($"RPCServiceType not found : {rPCServiceType}");

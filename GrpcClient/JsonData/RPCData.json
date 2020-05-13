@@ -7,5 +7,10 @@
   },
   "SaveFrontendIcon": {
     "FilePath": "/ETMALLNAS/FrontendIcon/00000000/yuchia_yang.png"
+  },
+  "CompressB2EImageRequest": {
+    "Path": "yuchia_yang.png",
+    "IsMain": false,
+    "Outputpath" : "yuchia_yang2.jpeg"
   }
 }
